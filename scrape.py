@@ -20,16 +20,14 @@ def writeTweets(username, keyword):
 
             if len(tweets) == limit:
                 break
-            tweets.append(
-                {'date': tweet.date, 'username': tweet.user.username, 'content': tweet.content, 'sourceURL': tweet.url})
+            tweets.append([tweet.date, tweet.user.username, tweet.url, tweet.content])
 
     else:
         for tweet in sntwitter.TwitterSearchScraper(query).get_items():
 
             if len(tweets) == limit:
                 break
-            tweets.append(
-                {'date': tweet.date, 'username': tweet.user.username, 'content': tweet.content})
+            tweets.append([tweet.date, tweet.user.username, tweet.url, tweet.content])
 
     return tweets
 
@@ -76,12 +74,8 @@ def main():
     for OBJ in json_response['data']:
         tweets += writeTweets(OBJ['username'], keyword)
 
-    with open("outfile.txt", "w", encoding="utf-8") as fl:
-
-        for tweet in tweets:
-            fl.write(
-                f"@{tweet['username'].upper()} - [{tweet['date']}] - [{tweet['sourceURL']}]\n|\n{tweet['content']}\n \
-                ----------------------------------------\n\n\n")
+    df = pd.DataFrame(tweets, columns=['Date', 'Username', 'URL', 'Tweet'])
+    df.to_csv("outfile.csv", index=False)
 
 
 if __name__ == "__main__":
