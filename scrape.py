@@ -12,7 +12,6 @@ def writeTweets(username, keywords, limit):
 
     query = f"(from:@{username})"
     tweets = []
-# (f" {keyword.lower()}" if keyword else "")
 
     if keywords:
         if "," in keywords:
