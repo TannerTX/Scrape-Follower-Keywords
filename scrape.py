@@ -8,26 +8,23 @@ import re
 bearer_token = os.environ.get("BEARER_TOKEN")
 
 
-def writeTweets(username, keyword):
+def writeTweets(username, keywords, limit):
 
     query = f"(from:@{username})"
     tweets = []
-    limit = 100
+# (f" {keyword.lower()}" if keyword else "")
 
-    if keyword:
+    if keywords:
+        if "," in keywords:
+            keywords = [ keyword.strip() for keyword in keywords.strip().split(',')]
 
-        for tweet in sntwitter.TwitterSearchScraper(query + f" {keyword.lower()}").get_items():
+    keywords = "(" + " OR ".join(keywords) + ")"
 
-            if len(tweets) == limit:
-                break
-            tweets.append([tweet.date, tweet.user.username, tweet.url, tweet.content])
-
-    else:
-        for tweet in sntwitter.TwitterSearchScraper(query).get_items():
-
-            if len(tweets) == limit:
-                break
-            tweets.append([tweet.date, tweet.user.username, tweet.url, tweet.content])
+    for tweet in sntwitter.TwitterSearchScraper(query + (str(keywords) if keywords else "")).get_items():
+        if len(tweets) == limit:
+            break
+        tweets.append([tweet.date, tweet.user.username,
+                      tweet.url, tweet.content])
 
     return tweets
 
@@ -58,10 +55,6 @@ def connect_to_endpoint(url, params):
     return response.json()
 
 
-def extract_format_date(text):
-    final = text
-
-
 def main():
 
     url = create_url()
@@ -70,9 +63,10 @@ def main():
     tweets = []
 
     keyword = str(input("Keyword: "))
+    limit = int(input("Tweet Limit/Person: "))
 
     for OBJ in json_response['data']:
-        tweets += writeTweets(OBJ['username'], keyword)
+        tweets += writeTweets(OBJ['username'], keyword, limit)
 
     df = pd.DataFrame(tweets, columns=['Date', 'Username', 'URL', 'Tweet'])
     df.to_csv("outfile.csv", index=False)
