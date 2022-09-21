@@ -7,11 +7,13 @@ import re
 
 bearer_token = os.environ.get("BEARER_TOKEN")
 
-
 def writeTweets(username, keywords, limit):
 
     query = f"(from:@{username})"
     tweets = []
+
+    if not limit:
+        limit = 10
 
     if keywords:
         if "," in keywords: 
@@ -47,18 +49,31 @@ def connect_to_endpoint(url):
 
 def main():
 
-    url = create_url()
-    json_response = connect_to_endpoint(url)
-    tweets = []
+    if not bearer_token:
+        print(
+            '''
+            ____________________
+           
+            Bearer token not set!
+            ____________________
 
-    keyword = str(input("Keyword(s) (separate with ,): "))
-    limit = int(input("Tweet Limit/Person: "))
+          In your project root, use
+       export BEARER_TOKEN=<token here>     
+            '''
+        )
 
-    for account in json_response['data']:
-        tweets += writeTweets(account['username'], keyword, limit)
+    else:
+        json_response = connect_to_endpoint(create_url())
+        tweets = []
 
-    df = pd.DataFrame(tweets, columns=['Date', 'Username', 'URL', 'Tweet'])
-    df.to_csv("outfile.csv", index=False)
+        keyword = str(input("Keyword(s) (separate with ,): "))
+        limit = int(input("Tweet Limit/Person: "))
+
+        for account in json_response['data']:
+            tweets += writeTweets(account['username'], keyword, limit)
+
+        df = pd.DataFrame(tweets, columns=['Date', 'Username', 'URL', 'Tweet'])
+        df.to_csv("outfile.csv", index=False)
 
 
 if __name__ == "__main__":
