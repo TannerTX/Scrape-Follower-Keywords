@@ -34,7 +34,8 @@ def create_url():
     user_id = str(input("*REQUIRED* Enter user ID: "))
 
     if not user_id:
-        return None
+        print("| ID is required! |")
+        quit()
 
     return f"https://api.twitter.com/2/users/{user_id}/following"
 
@@ -77,11 +78,6 @@ def main():
     else:
 
         url = create_url()
-
-        if not url:
-            print("| ID is required! |")
-            quit()
-
         json_response = connect_to_endpoint(url)
         tweets = []
 
