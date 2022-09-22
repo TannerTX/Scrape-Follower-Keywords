@@ -5,8 +5,7 @@ import snscrape.modules.twitter as sntwitter
 import pandas as pd
 import re
 
-bearer_token = os.environ.get("BEARER_TOKEN")
-
+bearer_token = os.environ.get("BEARER_TOKEN").strip()
 
 def writeTweets(username, limit, keywords=""):
 
@@ -31,7 +30,7 @@ def writeTweets(username, limit, keywords=""):
 
 
 def create_url():
-    user_id = str(input("*REQUIRED* Enter user ID: "))
+    user_id = str(input("*REQUIRED* Enter user ID: ")).strip()
 
     if not user_id:
         print("| ID is required! |")
