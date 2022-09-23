@@ -5,7 +5,7 @@ import snscrape.modules.twitter as sntwitter
 import pandas as pd
 import re
 
-bearer_token = os.environ.get("BEARER_TOKEN").strip()
+bearer_token = os.environ.get("BEARER_TOKEN")
 
 def writeTweets(username, limit, keywords=""):
 
@@ -44,7 +44,7 @@ def get_params():
 
 
 def bearer_oauth(r):
-    r.headers["Authorization"] = f"Bearer {bearer_token}"
+    r.headers["Authorization"] = f"Bearer {bearer_token.strip()}"
     r.headers["User-Agent"] = "v2FollowersLookupPython"
     return r
 
